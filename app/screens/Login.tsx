@@ -72,8 +72,13 @@ import {
               <TouchableOpacity style={styles.button} onPress={signIn}>
                 <Text style={styles.buttonText}>Login</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={signUp}>
-                <Text style={[styles.buttonText, styles.buttonOutlineText]}>Create Account</Text>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonOutline]}
+                onPress={signUp}
+              >
+                <Text style={[styles.buttonText, styles.buttonOutlineText]}>
+                  Create Account
+                </Text>
               </TouchableOpacity>
             </>
           )}

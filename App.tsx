@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StatusBar, StyleSheet } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from "react-native";
+import Login from "./app/screens/Login";
+import { useEffect, useState } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { FIREBASE_AUTH } from "./Firebase";
-import Login from "./app/screens/Login";
 import List from "./app/screens/List";
 import Details from "./app/screens/Details";
-import GameDashboard from "./app/screens/GameDashboard";  // Import GameDashboard
+import Dashboard from './app/screens/Dashboard'
 
 const Stack = createNativeStackNavigator();
 const InsideStack = createNativeStackNavigator();
@@ -34,10 +35,10 @@ function InsideLayout() {
         }}
       />
       <InsideStack.Screen 
-        name="GameDashboard"  // Add GameDashboard to the stack
-        component={GameDashboard} 
+        name="dashboard" 
+        component={Dashboard} 
         options={{ 
-          title: "Game Dashboard",
+          title: "Dashboard",
           headerStyle: styles.header,
           headerTitleStyle: styles.headerTitle,
         }}
@@ -55,7 +56,6 @@ export default function App() {
       setUser(user);
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 

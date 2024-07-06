@@ -1,36 +1,50 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { NavigationProp } from '@react-navigation/native';
+import { View, Text, Button, StyleSheet, Alert } from 'react-native'
+import React from 'react'
+import { FIREBASE_DB, FIREBASE_AUTH } from '../../Firebase';
+import { doc, setDoc } from "firebase/firestore"; 
 
-interface RouterProps {
-  navigation: NavigationProp<any, any>;
-}
+const Details = ({ route, navigation }) => {
+  const { challengeId, challengeTitle } = route.params;
 
-const Details = ({ navigation }: RouterProps) => {
+  const joinChallenge = async () => {
+    try {
+      const user = FIREBASE_AUTH.currentUser;
+      if (user) {
+        const userChallengesRef = doc(FIREBASE_DB, `users/${user.uid}/challenges/${challengeId}`);
+        await setDoc(userChallengesRef, {
+          challengeId,
+          challengeTitle,
+          joinedAt: new Date().toISOString(),
+        });
+        Alert.alert('Success', 'You have joined the challenge!');
+      } else {
+        Alert.alert('Error', 'You need to be logged in to join a challenge.');
+      }
+    } catch (error) {
+      console.error("Error joining challenge: ", error);
+      Alert.alert('Error', 'Failed to join the challenge.');
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Details</Text>
-      <Button
-        title="Join Game"
-        onPress={() => navigation.navigate('GameDashboard')}
-      />
+      <Text style={styles.title}>{challengeTitle}</Text>
+      <Button title="Join Challenge" onPress={joinChallenge} />
     </View>
   );
 };
 
+export default Details;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    fontSize: 24,
     marginBottom: 20,
-    color: '#6200ee',
   },
 });
-
-export default Details;
