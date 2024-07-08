@@ -1,14 +1,18 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
+import {
+  StyleSheet
+} from "react-native";
+
+
 import Login from "./app/screens/Login";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { FIREBASE_AUTH } from "./Firebase";
 import List from "./app/screens/List";
 import Details from "./app/screens/Details";
-import Dashboard from './app/screens/Dashboard'
+import Dashboard from "./app/screens/Dashboard";
 
 const Stack = createNativeStackNavigator();
 const InsideStack = createNativeStackNavigator();
@@ -16,28 +20,28 @@ const InsideStack = createNativeStackNavigator();
 function InsideLayout() {
   return (
     <InsideStack.Navigator>
-      <InsideStack.Screen 
-        name="list" 
-        component={List} 
-        options={{ 
+      <InsideStack.Screen
+        name="list"
+        component={List}
+        options={{
           title: "List",
           headerStyle: styles.header,
           headerTitleStyle: styles.headerTitle,
         }}
       />
-      <InsideStack.Screen 
-        name="details" 
-        component={Details} 
-        options={{ 
+      <InsideStack.Screen
+        name="details"
+        component={Details}
+        options={{
           title: "Details",
           headerStyle: styles.header,
           headerTitleStyle: styles.headerTitle,
         }}
       />
-      <InsideStack.Screen 
-        name="dashboard" 
-        component={Dashboard} 
-        options={{ 
+      <InsideStack.Screen
+        name="dashboard"
+        component={Dashboard}
+        options={{
           title: "Dashboard",
           headerStyle: styles.header,
           headerTitleStyle: styles.headerTitle,
