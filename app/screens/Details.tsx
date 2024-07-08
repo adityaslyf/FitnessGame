@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet, Alert, Image } from 'react-native';
+import { View, Text, Button, StyleSheet, Alert, Image, ScrollView } from 'react-native';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../Firebase';
 import { doc, setDoc } from 'firebase/firestore';
-import Pedo from '../components/Steps'
+import Pedo from '../components/Steps';
 
 interface Props {
   route: {
@@ -14,7 +14,7 @@ interface Props {
       // Add more fields as needed
     };
   };
-  navigation: any; // Adjust type as per your navigation setup
+  navigation: any;
 }
 
 const Details: React.FC<Props> = ({ route, navigation }) => {
@@ -41,41 +41,79 @@ const Details: React.FC<Props> = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: challengeImage }} style={styles.image} />
-      <Text style={styles.title}>{challengeTitle}</Text>
-      <Text style={styles.description}>{challengeDescription}</Text>
-      <Button title="Join Challenge" onPress={joinChallenge} />
-      
-      {/* Include Pedo component here */}
-      <Pedo />
-    </View>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
+        <Image source={{ uri: challengeImage }} style={styles.image} />
+        <Text style={styles.title}>{challengeTitle}</Text>
+        <Text style={styles.description}>{challengeDescription}</Text>
+        <Button title="Join Challenge" onPress={joinChallenge} color="#007bff" />
+
+        {/* Container for Steps */}
+        <View style={styles.stepsContainer}>
+          <Pedo style={styles.pedo} />
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
+    backgroundColor: '#f5f5f5', // Add a light background color
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    width: '100%',
+    maxWidth: 400, // Example max width to limit content width
   },
   image: {
     width: '100%',
-    height: 200, // Adjust height as needed
+    height: 200,
     marginBottom: 20,
     resizeMode: 'cover',
     borderRadius: 8,
+    borderWidth: 1, // Add a border to the image
+    borderColor: '#007bff', // Make the border blue
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
+    color: '#007bff', // Make the title blue
   },
   description: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
+    color: '#333', // Make the description a dark gray
+  },
+  stepsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 20,
+    backgroundColor: '#fff', // Add a white background to the steps container
+  },
+  stepsText: {
+    fontSize: 16,
+    marginRight: 10,
+    color: '#007bff', // Make the steps text blue
+  },
+  pedo: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#007bff',
   },
 });
 

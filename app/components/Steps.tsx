@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
-import { Constants } from 'expo-constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CALORIES_PER_STEP = 0.05;
@@ -32,7 +31,7 @@ const Pedo = () => {
 
             setTimeout(() => {
               setIsCounting(false);
-            }, 1000);
+            }, 1200);
           }
         });
       }

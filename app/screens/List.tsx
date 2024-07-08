@@ -1,8 +1,7 @@
 import React from "react";
-import { View, StyleSheet, FlatList, TouchableOpacity, Text } from "react-native";
+import { View, StyleSheet, FlatList, TouchableOpacity, Text, Image } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { FIREBASE_AUTH } from "../../Firebase";
-import { Image } from "react-native";
 
 interface Challenge {
   id: string;
@@ -22,23 +21,24 @@ const List: React.FC<RouterProps> = ({ navigation }) => {
     {
       id: "1",
       title: "Sample Challenge 1",
-      description: "Description of Sample Challenge 1",
+      description: "This is a Step counter Game Challnege , You can count the number of steps and caloires burned.",
       image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo2TQAjTLaCKCAq0JRbrIZLu9QuFgwiJ5GXQ&s",
     },
     {
       id: "2",
       title: "Sample Challenge 2",
-      description: "Description of Sample Challenge 2",
+      description: "Increase your daily steps and track your progress with this engaging challenge.",
       image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo2TQAjTLaCKCAq0JRbrIZLu9QuFgwiJ5GXQ&s",
     },
     {
       id: "3",
       title: "Sample Challenge 3",
-      description: "Description of Sample Challenge 3",
+      description: "Join this challenge to achieve your fitness goals through fun and interactive activities.",
       image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo2TQAjTLaCKCAq0JRbrIZLu9QuFgwiJ5GXQ&s",
     },
     // Add more challenges as needed
   ];
+  
 
   const handleChallengePress = (challenge: Challenge) => {
     navigation.navigate("details", {
@@ -71,12 +71,14 @@ const List: React.FC<RouterProps> = ({ navigation }) => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.cardList}
       />
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("dashboard")}>
-        <Text style={styles.buttonText}>My Challenges</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => FIREBASE_AUTH.signOut()}>
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={[styles.button, styles.myChallengesButton]} onPress={() => navigation.navigate("dashboard")}>
+          <Text style={styles.buttonText}>My Challenges</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={() => FIREBASE_AUTH.signOut()}>
+          <Text style={styles.buttonText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -84,19 +86,14 @@ const List: React.FC<RouterProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#f5f5f5",
     padding: 20,
   },
   cardList: {
     flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
   card: {
     backgroundColor: "#fff",
-    width: "100%",
     marginBottom: 20,
     borderRadius: 8,
     elevation: 5, // Android shadow
@@ -124,13 +121,23 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     resizeMode: "cover",
   },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
   button: {
     backgroundColor: "#6200ee",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 10,
-    width: "100%",
+    width: "48%",
+  },
+  myChallengesButton: {
+    marginRight: "2%",
+  },
+  logoutButton: {
+    marginLeft: "2%",
   },
   buttonText: {
     color: "#ffffff",
