@@ -5,7 +5,6 @@ import {
   StyleSheet
 } from "react-native";
 
-
 import Login from "./app/screens/Login";
 import { useEffect, useState, useRef } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";

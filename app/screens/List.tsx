@@ -22,19 +22,19 @@ const List: React.FC<RouterProps> = ({ navigation }) => {
       id: "1",
       title: "Sample Challenge 1",
       description: "This is a Step counter Game Challnege , You can count the number of steps and caloires burned.",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo2TQAjTLaCKCAq0JRbrIZLu9QuFgwiJ5GXQ&s",
+      image: "https://img.freepik.com/free-photo/fit-cartoon-character-training_23-2151148926.jpg?size=626&ext=jpg",
     },
     {
       id: "2",
       title: "Sample Challenge 2",
       description: "Increase your daily steps and track your progress with this engaging challenge.",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo2TQAjTLaCKCAq0JRbrIZLu9QuFgwiJ5GXQ&s",
+      image: "https://img.freepik.com/free-photo/fit-cartoon-character-training_23-2151148926.jpg?size=626&ext=jpg",
     },
     {
       id: "3",
       title: "Sample Challenge 3",
       description: "Join this challenge to achieve your fitness goals through fun and interactive activities.",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo2TQAjTLaCKCAq0JRbrIZLu9QuFgwiJ5GXQ&s",
+      image: "https://img.freepik.com/free-photo/fit-cartoon-character-training_23-2151148926.jpg?size=626&ext=jpg",
     },
     // Add more challenges as needed
   ];
