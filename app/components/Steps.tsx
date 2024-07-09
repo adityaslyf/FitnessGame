@@ -1,9 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as BackgroundFetch from 'expo-background-fetch';
+import * as TaskManager from 'expo-task-manager';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CALORIES_PER_STEP = 0.05;
+const BACKGROUND_FETCH_TASK = 'background-fetch';
+
+TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
+  try {
+    const storedSteps = await AsyncStorage.getItem('steps');
+    let steps = storedSteps ? parseInt(storedSteps) : 0;
+
+    // Simulate step counting in background
+    steps += Math.floor(Math.random() * 10); // Add 0-9 steps randomly
+
+    await AsyncStorage.setItem('steps', steps.toString());
+
+    return BackgroundFetch.BackgroundFetchResult.NewData;
+  } catch (error) {
+    return BackgroundFetch.BackgroundFetchResult.Failed;
+  }
+});
 
 const Pedo = () => {
   const [steps, setSteps] = useState(0);
@@ -12,7 +32,10 @@ const Pedo = () => {
   const [lastTimestamp, setLastTimestamp] = useState(0);
 
   useEffect(() => {
+    registerBackgroundFetch();
+    loadSteps();
     let subscription;
+
     Accelerometer.isAvailableAsync().then((result) => {
       if (result) {
         subscription = Accelerometer.addListener((accelerometerData) => {
@@ -27,7 +50,7 @@ const Pedo = () => {
             setIsCounting(true);
             setLastY(y);
             setLastTimestamp(timestamp);
-            setSteps((prevSteps) => prevSteps + 1);
+            incrementSteps();
 
             setTimeout(() => {
               setIsCounting(false);
@@ -44,8 +67,46 @@ const Pedo = () => {
     };
   }, [isCounting, lastY, lastTimestamp]);
 
-  const resetSteps = () => {
-    setSteps(0);
+  const registerBackgroundFetch = async () => {
+    try {
+      await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+        minimumInterval: 60 * 15, // 15 minutes
+        stopOnTerminate: false,
+        startOnBoot: true,
+      });
+    } catch (err) {
+      console.log("Task Registration failed:", err);
+    }
+  };
+
+  const loadSteps = async () => {
+    try {
+      const storedSteps = await AsyncStorage.getItem('steps');
+      if (storedSteps !== null) {
+        setSteps(parseInt(storedSteps));
+      }
+    } catch (error) {
+      console.log("Error loading steps:", error);
+    }
+  };
+
+  const incrementSteps = async () => {
+    try {
+      const newSteps = steps + 1;
+      setSteps(newSteps);
+      await AsyncStorage.setItem('steps', newSteps.toString());
+    } catch (error) {
+      console.log("Error saving steps:", error);
+    }
+  };
+
+  const resetSteps = async () => {
+    try {
+      setSteps(0);
+      await AsyncStorage.setItem('steps', '0');
+    } catch (error) {
+      console.log("Error resetting steps:", error);
+    }
   };
 
   const estimatedCalories = steps * CALORIES_PER_STEP;
