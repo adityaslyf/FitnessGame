@@ -2,37 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as BackgroundFetch from 'expo-background-fetch';
-import * as TaskManager from 'expo-task-manager';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FIREBASE_DB, FIREBASE_AUTH } from '../../Firebase';
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
 
 const CALORIES_PER_STEP = 0.05;
-const BACKGROUND_FETCH_TASK = 'background-fetch';
 
-TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
-  try {
-    const storedSteps = await AsyncStorage.getItem('steps');
-    let steps = storedSteps ? parseInt(storedSteps) : 0;
+interface PedoProps {
+  challengeId: string;
+}
 
-    // Simulate step counting in background
-    steps += Math.floor(Math.random() * 10); // Add 0-9 steps randomly
-
-    await AsyncStorage.setItem('steps', steps.toString());
-
-    return BackgroundFetch.BackgroundFetchResult.NewData;
-  } catch (error) {
-    return BackgroundFetch.BackgroundFetchResult.Failed;
-  }
-});
-
-const Pedo = () => {
+const Pedo: React.FC<PedoProps> = ({ challengeId }) => {
   const [steps, setSteps] = useState(0);
   const [isCounting, setIsCounting] = useState(false);
   const [lastY, setLastY] = useState(0);
   const [lastTimestamp, setLastTimestamp] = useState(0);
 
   useEffect(() => {
-    registerBackgroundFetch();
     loadSteps();
     let subscription;
 
@@ -65,47 +50,26 @@ const Pedo = () => {
         subscription.remove();
       }
     };
-  }, [isCounting, lastY, lastTimestamp]);
-
-  const registerBackgroundFetch = async () => {
-    try {
-      await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-        minimumInterval: 60 * 15, // 15 minutes
-        stopOnTerminate: false,
-        startOnBoot: true,
-      });
-    } catch (err) {
-      console.log("Task Registration failed:", err);
-    }
-  };
+  }, [isCounting, lastY, lastTimestamp, challengeId]);
 
   const loadSteps = async () => {
-    try {
-      const storedSteps = await AsyncStorage.getItem('steps');
-      if (storedSteps !== null) {
-        setSteps(parseInt(storedSteps));
+    const user = FIREBASE_AUTH.currentUser;
+    if (user) {
+      const userChallengeRef = doc(FIREBASE_DB, `users/${user.uid}/challenges/${challengeId}`);
+      const docSnap = await getDoc(userChallengeRef);
+      if (docSnap.exists()) {
+        setSteps(docSnap.data().steps || 0);
       }
-    } catch (error) {
-      console.log("Error loading steps:", error);
     }
   };
 
   const incrementSteps = async () => {
-    try {
+    const user = FIREBASE_AUTH.currentUser;
+    if (user) {
       const newSteps = steps + 1;
       setSteps(newSteps);
-      await AsyncStorage.setItem('steps', newSteps.toString());
-    } catch (error) {
-      console.log("Error saving steps:", error);
-    }
-  };
-
-  const resetSteps = async () => {
-    try {
-      setSteps(0);
-      await AsyncStorage.setItem('steps', '0');
-    } catch (error) {
-      console.log("Error resetting steps:", error);
+      const userChallengeRef = doc(FIREBASE_DB, `users/${user.uid}/challenges/${challengeId}`);
+      await updateDoc(userChallengeRef, { steps: newSteps });
     }
   };
 
@@ -113,7 +77,7 @@ const Pedo = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Step Tracker</Text>
+      <Text style={styles.title}>Challenge Progress</Text>
       <View style={styles.stepContainer}>
         <Text style={styles.stepsLabel}>{steps}</Text>
         <Text style={styles.stepsText}>Steps</Text>
@@ -125,7 +89,6 @@ const Pedo = () => {
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

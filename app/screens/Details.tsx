@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, Alert, Image, ScrollView } from 'react-native';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../Firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import Pedo from '../components/Steps';
 
 interface Props {
@@ -11,7 +11,6 @@ interface Props {
       challengeTitle: string;
       challengeDescription: string;
       challengeImage: string;
-      // Add more fields as needed
     };
   };
   navigation: any;
@@ -19,6 +18,20 @@ interface Props {
 
 const Details: React.FC<Props> = ({ route, navigation }) => {
   const { challengeId, challengeTitle, challengeDescription, challengeImage } = route.params;
+  const [isJoined, setIsJoined] = useState(false);
+
+  useEffect(() => {
+    checkIfJoined();
+  }, []);
+
+  const checkIfJoined = async () => {
+    const user = FIREBASE_AUTH.currentUser;
+    if (user) {
+      const userChallengeRef = doc(FIREBASE_DB, `users/${user.uid}/challenges/${challengeId}`);
+      const docSnap = await getDoc(userChallengeRef);
+      setIsJoined(docSnap.exists());
+    }
+  };
 
   const joinChallenge = async () => {
     try {
@@ -29,8 +42,10 @@ const Details: React.FC<Props> = ({ route, navigation }) => {
           challengeId,
           challengeTitle,
           joinedAt: new Date().toISOString(),
+          steps: 0, // Initialize steps to 0
         });
         Alert.alert('Success', 'You have joined the challenge!');
+        setIsJoined(true);
       } else {
         Alert.alert('Error', 'You need to be logged in to join a challenge.');
       }
@@ -46,12 +61,15 @@ const Details: React.FC<Props> = ({ route, navigation }) => {
         <Image source={{ uri: challengeImage }} style={styles.image} />
         <Text style={styles.title}>{challengeTitle}</Text>
         <Text style={styles.description}>{challengeDescription}</Text>
-        <Button title="Join Challenge" onPress={joinChallenge} color="#007bff" />
-
-        {/* Container for Steps */}
-        <View style={styles.stepsContainer}>
-          <Pedo style={styles.pedo} />
-        </View>
+        {!isJoined && (
+          <Button title="Join Challenge" onPress={joinChallenge} color="#007bff" />
+        )}
+        
+        {isJoined && (
+          <View style={styles.stepsContainer}>
+            <Pedo challengeId={challengeId} />
+          </View>
+        )}
       </View>
     </ScrollView>
   );
